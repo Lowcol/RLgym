@@ -1,3 +1,4 @@
+import os
 import gymnasium as gym
 import numpy as np
 import matplotlib.pyplot as plt
@@ -14,7 +15,7 @@ def run(episodes, is_training=True, render=False):
     if is_training:
         q = np.zeros((len(pos_space), len(vel_space), env.action_space.n)) # init a 20x20x3 array
     else:
-        f = open("mountain_car.pkl", "rb")
+        f = open("mountainCar/mountain_car.pkl", "rb")
         q = pickle.load(f)
         f.close()
         
@@ -67,7 +68,7 @@ def run(episodes, is_training=True, render=False):
     env.close()
     
     if is_training:
-        f = open("mountain_car.pkl", "wb")
+        f = open("mountainCar/mountain_car.pkl", "wb")
         pickle.dump(q, f)
         f.close()
     
@@ -75,7 +76,7 @@ def run(episodes, is_training=True, render=False):
     for t in range(episodes):
         mean_reward[t] = np.mean(rewards_per_episode[max(0, t-100):(t+1)])
     plt.plot(mean_reward)
-    plt.savefig('mountain_car.png')
+    plt.savefig('mountainCar/mountain_car.png')
     
 if __name__ == "__main__":
     run(4000, is_training=False, render=True)
