@@ -62,7 +62,6 @@ def run(episodes, is_training=True, render=False):
             rewards += reward
         
         epsilons = max(0, epsilons - epsilon_decay_rate)
-        
         rewards_per_episode[i] = rewards
         
     env.close()
