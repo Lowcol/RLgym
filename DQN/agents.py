@@ -1,4 +1,5 @@
 import gymnasium as gym
+import flappy_bird_gymnasium
 import matplotlib
 import torch
 from torch import nn
