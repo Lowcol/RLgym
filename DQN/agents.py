@@ -1,5 +1,5 @@
 import gymnasium as gym
-import flappy_bird_gymnasium
+import flappy_bird_gymnasium 
 import matplotlib
 import torch
 from torch import nn
@@ -47,6 +47,7 @@ class Agent:
         self.network_sync_rate  = hyperparameters['network_sync_rate']
         self.fc1_nodes          = hyperparameters['fc1_nodes']
         self.env_make_params    = hyperparameters.get('env_make_params', {})
+        self.enable_double_dqn   = hyperparameters['enable_double_dqn']
 
         self.loss_fn = nn.MSELoss()   # NN Loss function. MSE=Mean Squared Error | can be swapped to something else
         self.optimizer = None         # NN optimizer. Initialized later
@@ -210,8 +211,14 @@ class Agent:
         terminations = torch.tensor(terminations).float().to(device) 
         
         with torch.no_grad():
-            target_q = rewards + (1-terminations) * self.discount_factor_g * target_dqn(new_states).max(dim=1)[0]
-        
+            if self.enable_double_dqn:
+                # Double DQN
+                best_actions_from_policy = policy_dqn(new_states).argmax(dim=1)
+                target_q = rewards + (1-terminations) * self.discount_factor_g * \
+                    target_dqn(new_states).gather(dim=1, index=best_actions_from_policy.unsqueeze(dim=1)).squeeze()
+            else:
+                target_q = rewards + (1-terminations) * self.discount_factor_g * target_dqn(new_states).max(dim=1)[0]
+            
         
             
         current_q = policy_dqn(states).gather(dim=1, index=actions.unsqueeze(dim=1)).squeeze()
