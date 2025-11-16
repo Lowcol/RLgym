@@ -9,7 +9,8 @@ class DQN(nn.Module):
         
         self.enable_dueling_dqn = enable_dueling_dqn
         
-        self.fc1 = nn.Linear(state_dim, hidden_dim)
+        self.fc1 = nn.Linear(state_dim, hidden_dim) # 180 -> 256
+        self.fc2 = nn.Linear(hidden_dim, hidden_dim) # 256 -> 256
         
         if self.enable_dueling_dqn:
             # value stream
@@ -25,6 +26,7 @@ class DQN(nn.Module):
     
     def forward(self, x):
         x = F.relu(self.fc1(x))
+        x = F.relu(self.fc2(x))
         
         if self.enable_dueling_dqn:
             # value calc
