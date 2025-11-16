@@ -47,7 +47,8 @@ class Agent:
         self.network_sync_rate  = hyperparameters['network_sync_rate']
         self.fc1_nodes          = hyperparameters['fc1_nodes']
         self.env_make_params    = hyperparameters.get('env_make_params', {})
-        self.enable_double_dqn   = hyperparameters['enable_double_dqn']
+        self.enable_double_dqn  = hyperparameters['enable_double_dqn']
+        self.enable_dueling_dqn = hyperparameters['enable_dueling_dqn']
 
         self.loss_fn = nn.MSELoss()   # NN Loss function. MSE=Mean Squared Error | can be swapped to something else
         self.optimizer = None         # NN optimizer. Initialized later
@@ -76,7 +77,7 @@ class Agent:
         reward_per_episode = []
         epsilon_history = []
         
-        policy_dqn = DQN(num_states, num_actions, self.fc1_nodes).to(device)
+        policy_dqn = DQN(num_states, num_actions, self.fc1_nodes, self.enable_dueling_dqn).to(device)
         
         
         if is_training:
@@ -87,7 +88,7 @@ class Agent:
             epsilon = self.epsilon_init
             
             # create target network and make it identical to the policy network
-            target_dqn = DQN(num_states, num_actions, self.fc1_nodes).to(device)
+            target_dqn = DQN(num_states, num_actions, self.fc1_nodes, self.enable_dueling_dqn).to(device)
             target_dqn.load_state_dict(policy_dqn.state_dict())
             
             # Policy network optimizer. "Adam" optimizer can be swapped to something else
